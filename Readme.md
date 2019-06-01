@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Евгений Ланец](https://up.htmlacademy.ru/javascript/17/user/912019).
-* Наставник: `Неизвестно`.
+* Наставник: [Алёна Сиприкова](https://htmlacademy.ru/profile/asiprikova).
 
 ---
 
