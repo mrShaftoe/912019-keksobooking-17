@@ -84,9 +84,12 @@ map.classList.remove('map--faded');
  */
 var renderPin = function (offer) {
   var pinElement = pinTemplate.cloneNode(true);
-  pinElement.style.left = offer.location.x - PIN_WIDTH / 2 + 'px';
+  var pinElementX = offer.location.x - PIN_WIDTH / 2;
+  var pinElementImg = pinElement.querySelector('img');
+  pinElement.style.left = ((pinElementX > 0) ? pinElementX : 0) + 'px';
   pinElement.style.top = offer.location.y - PIN_HEIGHT + 'px';
-  pinElement.querySelector('img').src = offer.author.avatar;
+  pinElementImg.src = offer.author.avatar;
+  pinElementImg.alt = offer.offer.type;
 
   return pinElement;
 };
