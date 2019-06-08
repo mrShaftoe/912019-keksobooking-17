@@ -1,7 +1,7 @@
 'use strict';
 
 var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
-var PIN_WIDTH = 40;
+var PIN_HALF_WIDTH = 20;
 var PIN_HEIGHT = 40;
 var MAX_Y = 630;
 var MIN_Y = 130;
@@ -18,7 +18,7 @@ var pinTemplate = document.querySelector('#pin')
  * @return {number} целое число, координата середины метки
  */
 var getPinX = function () {
-  return Math.floor(Math.random() * map.offsetWidth);
+  return Math.floor(Math.random() * ((map.offsetWidth - PIN_HALF_WIDTH) - PIN_HALF_WIDTH) + PIN_HALF_WIDTH);
 };
 
 /**
@@ -84,9 +84,8 @@ map.classList.remove('map--faded');
  */
 var renderPin = function (offer) {
   var pinElement = pinTemplate.cloneNode(true);
-  var pinElementX = offer.location.x - PIN_WIDTH / 2;
   var pinElementImg = pinElement.querySelector('img');
-  pinElement.style.left = ((pinElementX > 0) ? pinElementX : 0) + 'px';
+  pinElement.style.left = offer.location.x - PIN_HALF_WIDTH + 'px';
   pinElement.style.top = offer.location.y - PIN_HEIGHT + 'px';
   pinElementImg.src = offer.author.avatar;
   pinElementImg.alt = offer.offer.type;
