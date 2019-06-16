@@ -1,17 +1,26 @@
 'use strict';
 
 var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
-var PIN_HALF_WIDTH = 20;
-var PIN_HEIGHT = 40;
+var PIN_HALF_WIDTH = 25;
+var PIN_HEIGHT = 70;
+var MAIN_PIN_WIDTH = 65;
 var MAX_Y = 630;
 var MIN_Y = 130;
 
 
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
+var mainPin = map.querySelector('.map__pin--main');
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
+var offers = [];
+var mapFilters = map.querySelector('.map__filters');
+var mapFiltersInputs = mapFilters.querySelectorAll('select, fieldset');
+var adForm = document.querySelector('.ad-form');
+var adFormFieldsets = adForm.querySelectorAll('fieldset');
+var address = adForm.querySelector('#address');
+
 
 /**
  * Функция получения координаты x метки на карте
@@ -68,15 +77,6 @@ var createOffer = function (counter) {
   };
 };
 
-// Cоздание массива из 8 предложений
-var offers = [];
-for (var i = 1; i <= 8; i++) {
-  offers.push(createOffer(i));
-}
-
-// Удаление класса .map--faded
-map.classList.remove('map--faded');
-
 /**
  * Функция создания нового пина
  * @param {object} offer объект, содержащий данные предложения
@@ -93,6 +93,29 @@ var renderPin = function (offer) {
   return pinElement;
 };
 
+/**
+ * Функция перевода страницы в активный режим
+ */
+var onMainPinClick = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  for (var i = 0; i < adFormFieldsets.length; i++) {
+    adFormFieldsets[i].disabled = false;
+  }
+  for (i = 0; i < mapFiltersInputs.length; i++) {
+    mapFiltersInputs[i].disabled = false;
+  }
+};
+
+var getAddressCoord = function (position) {
+  return parseInt(mainPin.style[position].slice(0, -2), 10) + MAIN_PIN_WIDTH / 2;
+};
+
+// Cоздание массива из 8 предложений
+for (var i = 1; i <= 8; i++) {
+  offers.push(createOffer(i));
+}
+
 // Создание фрагмента
 var fragment = document.createDocumentFragment();
 
@@ -103,3 +126,17 @@ for (i = 0; i < offers.length; i++) {
 
 // Добавление фрагмента в .map__pins
 mapPins.appendChild(fragment);
+
+// Установка всем fieldset формы disabled=true
+for (i = 0; i < adFormFieldsets.length; i++) {
+  adFormFieldsets[i].disabled = true;
+}
+
+for (i = 0; i < mapFiltersInputs.length; i++) {
+  mapFiltersInputs[i].disabled = true;
+}
+
+address.value = getAddressCoord('left') + ', ' + getAddressCoord('top');
+mainPin.addEventListener('click', onMainPinClick);
+
+
