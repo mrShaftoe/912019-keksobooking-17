@@ -4,6 +4,7 @@ var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var PIN_HALF_WIDTH = 25;
 var PIN_HEIGHT = 70;
 var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 81;
 var MAX_Y = 630;
 var MIN_Y = 130;
 
@@ -16,9 +17,7 @@ var pinTemplate = document.querySelector('#pin')
     .querySelector('.map__pin');
 var offers = [];
 var mapFilters = map.querySelector('.map__filters');
-var mapFiltersInputs = mapFilters.querySelectorAll('select, fieldset');
 var adForm = document.querySelector('.ad-form');
-var adFormFieldsets = adForm.querySelectorAll('fieldset');
 var address = adForm.querySelector('#address');
 
 
@@ -93,24 +92,6 @@ var renderPin = function (offer) {
   return pinElement;
 };
 
-/**
- * Функция перевода страницы в активный режим
- */
-var onMainPinClick = function () {
-  map.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-  for (var i = 0; i < adFormFieldsets.length; i++) {
-    adFormFieldsets[i].disabled = false;
-  }
-  for (i = 0; i < mapFiltersInputs.length; i++) {
-    mapFiltersInputs[i].disabled = false;
-  }
-};
-
-var getAddressCoord = function (position) {
-  return parseInt(mainPin.style[position].slice(0, -2), 10) + MAIN_PIN_WIDTH / 2;
-};
-
 // Cоздание массива из 8 предложений
 for (var i = 1; i <= 8; i++) {
   offers.push(createOffer(i));
@@ -124,19 +105,54 @@ for (i = 0; i < offers.length; i++) {
   fragment.appendChild(renderPin(offers[i]));
 }
 
-// Добавление фрагмента в .map__pins
-mapPins.appendChild(fragment);
+/**
+ * Функция получения координаты элемента mainPin
+ * @param {string} position 'Left' или 'Top
+ * @param {number} pinSize размер элемента mainPin
+ * @return {number} координата элемента mainPin
+ */
+var getAddressCoord = function (position, pinSize) {
+  return mainPin['offset' + position] + pinSize;
+};
 
-// Установка всем fieldset формы disabled=true
-for (i = 0; i < adFormFieldsets.length; i++) {
-  adFormFieldsets[i].disabled = true;
-}
+/**
+ * Функция блокировки полей форм и подстановки стартовых координат в поле address
+ * при запуске страницы
+ */
+var initial = function () {
+  for (i = 0; i < adForm.children.length; i++) {
+    adForm.children[i].disabled = true;
+  }
 
-for (i = 0; i < mapFiltersInputs.length; i++) {
-  mapFiltersInputs[i].disabled = true;
-}
+  for (i = 0; i < mapFilters.children.length; i++) {
+    mapFilters.children[i].disabled = true;
+  }
 
-address.value = getAddressCoord('left') + ', ' + getAddressCoord('top');
+  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_WIDTH / 2);
+};
+
+/**
+ * Функция перевода страницы в активный режим
+ */
+var onMainPinClick = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  for (i = 0; i < adForm.children.length; i++) {
+    adForm.children[i].disabled = false;
+  }
+  for (i = 0; i < mapFilters.children.length; i++) {
+    mapFilters.children[i].disabled = false;
+  }
+};
+
+var onMainPinMouseUp = function () {
+  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_HEIGHT);
+  // Добавление фрагмента в .map__pins
+  mapPins.appendChild(fragment);
+};
+
+initial();
 mainPin.addEventListener('click', onMainPinClick);
+mainPin.addEventListener('mouseup', onMainPinMouseUp);
 
 
