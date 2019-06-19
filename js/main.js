@@ -1,17 +1,25 @@
 'use strict';
 
 var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
-var PIN_HALF_WIDTH = 20;
-var PIN_HEIGHT = 40;
+var PIN_HALF_WIDTH = 25;
+var PIN_HEIGHT = 70;
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 81;
 var MAX_Y = 630;
 var MIN_Y = 130;
 
 
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
+var mainPin = map.querySelector('.map__pin--main');
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
+var offers = [];
+var mapFilters = map.querySelector('.map__filters');
+var adForm = document.querySelector('.ad-form');
+var address = adForm.querySelector('#address');
+
 
 /**
  * Функция получения координаты x метки на карте
@@ -68,15 +76,6 @@ var createOffer = function (counter) {
   };
 };
 
-// Cоздание массива из 8 предложений
-var offers = [];
-for (var i = 1; i <= 8; i++) {
-  offers.push(createOffer(i));
-}
-
-// Удаление класса .map--faded
-map.classList.remove('map--faded');
-
 /**
  * Функция создания нового пина
  * @param {object} offer объект, содержащий данные предложения
@@ -93,6 +92,11 @@ var renderPin = function (offer) {
   return pinElement;
 };
 
+// Cоздание массива из 8 предложений
+for (var i = 1; i <= 8; i++) {
+  offers.push(createOffer(i));
+}
+
 // Создание фрагмента
 var fragment = document.createDocumentFragment();
 
@@ -101,5 +105,54 @@ for (i = 0; i < offers.length; i++) {
   fragment.appendChild(renderPin(offers[i]));
 }
 
-// Добавление фрагмента в .map__pins
-mapPins.appendChild(fragment);
+/**
+ * Функция получения координаты элемента mainPin
+ * @param {string} position 'Left' или 'Top
+ * @param {number} pinSize размер элемента mainPin
+ * @return {number} координата элемента mainPin
+ */
+var getAddressCoord = function (position, pinSize) {
+  return mainPin['offset' + position] + pinSize;
+};
+
+/**
+ * Функция блокировки полей форм и подстановки стартовых координат в поле address
+ * при запуске страницы
+ */
+var initial = function () {
+  for (i = 0; i < adForm.children.length; i++) {
+    adForm.children[i].disabled = true;
+  }
+
+  for (i = 0; i < mapFilters.children.length; i++) {
+    mapFilters.children[i].disabled = true;
+  }
+
+  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_WIDTH / 2);
+};
+
+/**
+ * Функция перевода страницы в активный режим
+ */
+var onMainPinClick = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  for (i = 0; i < adForm.children.length; i++) {
+    adForm.children[i].disabled = false;
+  }
+  for (i = 0; i < mapFilters.children.length; i++) {
+    mapFilters.children[i].disabled = false;
+  }
+};
+
+var onMainPinMouseUp = function () {
+  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_HEIGHT);
+  // Добавление фрагмента в .map__pins
+  mapPins.appendChild(fragment);
+};
+
+initial();
+mainPin.addEventListener('click', onMainPinClick);
+mainPin.addEventListener('mouseup', onMainPinMouseUp);
+
+
