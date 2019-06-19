@@ -7,7 +7,12 @@ var MAIN_PIN_WIDTH = 65;
 var MAIN_PIN_HEIGHT = 81;
 var MAX_Y = 630;
 var MIN_Y = 130;
-
+var HOUSING_MIN_PRICES = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+};
 
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
@@ -19,8 +24,10 @@ var offers = [];
 var mapFilters = map.querySelector('.map__filters');
 var adForm = document.querySelector('.ad-form');
 var address = adForm.querySelector('#address');
-
-
+var houseTypeSelect = adForm.querySelector('#type');
+var pricePerNight = adForm.querySelector('#price');
+var timein = adForm.querySelector('#timein');
+var timeout = adForm.querySelector('#timeout');
 /**
  * Функция получения координаты x метки на карте
  * @return {number} целое число, координата середины метки
@@ -115,6 +122,11 @@ var getAddressCoord = function (position, pinSize) {
   return mainPin['offset' + position] + pinSize;
 };
 
+var onHouseTypeSelectChange = function () {
+  pricePerNight.min = HOUSING_MIN_PRICES[houseTypeSelect.value];
+  pricePerNight.placeholder = HOUSING_MIN_PRICES[houseTypeSelect.value];
+};
+
 /**
  * Функция блокировки полей форм и подстановки стартовых координат в поле address
  * при запуске страницы
@@ -129,6 +141,7 @@ var initial = function () {
   }
 
   address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_WIDTH / 2);
+  onHouseTypeSelectChange();
 };
 
 /**
@@ -154,5 +167,10 @@ var onMainPinMouseUp = function () {
 initial();
 mainPin.addEventListener('click', onMainPinClick);
 mainPin.addEventListener('mouseup', onMainPinMouseUp);
-
-
+houseTypeSelect.addEventListener('change', onHouseTypeSelectChange);
+timein.addEventListener('change', function () {
+  timeout.value = timein.value;
+});
+timeout.addEventListener('change', function () {
+  timein.value = timeout.value;
+});
