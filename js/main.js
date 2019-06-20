@@ -121,10 +121,23 @@ for (i = 0; i < offers.length; i++) {
 var getAddressCoord = function (position, pinSize) {
   return mainPin['offset' + position] + pinSize;
 };
+/**
+ * Функция изменяет значение поля input#price в зависимости от выбранного
+ * option в houseTypeSelect
+ * @param {object} evt Event
+ */
+var onHouseTypeSelectChange = function (evt) {
+  pricePerNight.value = HOUSING_MIN_PRICES[evt.target.value];
+  pricePerNight.placeholder = HOUSING_MIN_PRICES[evt.target.value];
+};
 
-var onHouseTypeSelectChange = function () {
-  pricePerNight.min = HOUSING_MIN_PRICES[houseTypeSelect.value];
-  pricePerNight.placeholder = HOUSING_MIN_PRICES[houseTypeSelect.value];
+/**
+ * Функция изменяет значение одного select в зависимости от другого
+ * @param {object} evt Event
+ * @param {object} timeSelect select, в который требуется внести изменения
+ */
+var onTimeSelectChange = function (evt, timeSelect) {
+  timeSelect.value = evt.target.value;
 };
 
 /**
@@ -141,7 +154,6 @@ var initial = function () {
   }
 
   address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_WIDTH / 2);
-  onHouseTypeSelectChange();
 };
 
 /**
@@ -167,10 +179,12 @@ var onMainPinMouseUp = function () {
 initial();
 mainPin.addEventListener('click', onMainPinClick);
 mainPin.addEventListener('mouseup', onMainPinMouseUp);
-houseTypeSelect.addEventListener('change', onHouseTypeSelectChange);
-timein.addEventListener('change', function () {
-  timeout.value = timein.value;
+houseTypeSelect.addEventListener('change', function (evt) {
+  onHouseTypeSelectChange(evt);
 });
-timeout.addEventListener('change', function () {
-  timein.value = timeout.value;
+timein.addEventListener('change', function (evt) {
+  onTimeSelectChange(evt, timeout);
+});
+timeout.addEventListener('change', function (evt) {
+  onTimeSelectChange(evt, timein);
 });
