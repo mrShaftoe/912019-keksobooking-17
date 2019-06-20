@@ -127,7 +127,7 @@ var getAddressCoord = function (position, pinSize) {
  * @param {object} evt Event
  */
 var onHouseTypeSelectChange = function (evt) {
-  pricePerNight.value = HOUSING_MIN_PRICES[evt.target.value];
+  pricePerNight.min = HOUSING_MIN_PRICES[evt.target.value];
   pricePerNight.placeholder = HOUSING_MIN_PRICES[evt.target.value];
 };
 
