@@ -7,7 +7,12 @@ var MAIN_PIN_WIDTH = 65;
 var MAIN_PIN_HEIGHT = 81;
 var MAX_Y = 630;
 var MIN_Y = 130;
-
+var HOUSING_MIN_PRICES = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+};
 
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
@@ -19,8 +24,10 @@ var offers = [];
 var mapFilters = map.querySelector('.map__filters');
 var adForm = document.querySelector('.ad-form');
 var address = adForm.querySelector('#address');
-
-
+var houseTypeSelect = adForm.querySelector('#type');
+var pricePerNight = adForm.querySelector('#price');
+var timein = adForm.querySelector('#timein');
+var timeout = adForm.querySelector('#timeout');
 /**
  * Функция получения координаты x метки на карте
  * @return {number} целое число, координата середины метки
@@ -114,6 +121,24 @@ for (i = 0; i < offers.length; i++) {
 var getAddressCoord = function (position, pinSize) {
   return mainPin['offset' + position] + pinSize;
 };
+/**
+ * Функция изменяет значение поля input#price в зависимости от выбранного
+ * option в houseTypeSelect
+ * @param {object} evt Event
+ */
+var onHouseTypeSelectChange = function (evt) {
+  pricePerNight.min = HOUSING_MIN_PRICES[evt.target.value];
+  pricePerNight.placeholder = HOUSING_MIN_PRICES[evt.target.value];
+};
+
+/**
+ * Функция изменяет значение одного select в зависимости от другого
+ * @param {object} evt Event
+ * @param {object} timeSelect select, в который требуется внести изменения
+ */
+var onTimeSelectChange = function (evt, timeSelect) {
+  timeSelect.value = evt.target.value;
+};
 
 /**
  * Функция блокировки полей форм и подстановки стартовых координат в поле address
@@ -154,5 +179,12 @@ var onMainPinMouseUp = function () {
 initial();
 mainPin.addEventListener('click', onMainPinClick);
 mainPin.addEventListener('mouseup', onMainPinMouseUp);
-
-
+houseTypeSelect.addEventListener('change', function (evt) {
+  onHouseTypeSelectChange(evt);
+});
+timein.addEventListener('change', function (evt) {
+  onTimeSelectChange(evt, timeout);
+});
+timeout.addEventListener('change', function (evt) {
+  onTimeSelectChange(evt, timein);
+});
