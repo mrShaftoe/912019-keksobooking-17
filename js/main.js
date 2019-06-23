@@ -114,15 +114,6 @@ for (i = 0; i < offers.length; i++) {
 }
 
 /**
- * Функция получения координаты элемента mainPin
- * @param {string} position 'Left' или 'Top
- * @param {number} pinSize размер элемента mainPin
- * @return {number} координата элемента mainPin
- */
-var getAddressCoord = function (position, pinSize) {
-  return mainPin['offset' + position] + pinSize;
-};
-/**
  * Функция изменяет значение поля input#price в зависимости от выбранного
  * option в houseTypeSelect
  * @param {object} evt Event
@@ -154,7 +145,7 @@ var initial = function () {
     mapFilters.children[i].disabled = true;
   }
 
-  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_WIDTH / 2);
+  setAddressCoords(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2, mainPin.offsetTop + MAIN_PIN_WIDTH / 2);
 };
 
 /**
@@ -172,8 +163,13 @@ var activatePage = function () {
   mapPins.appendChild(fragment);
 };
 
-var getAddressCoords = function () {
-  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_HEIGHT);
+/**
+ * Функция подстановки координат пина в поле адрес
+ * @param {number} x Х-координата пина
+ * @param {number} y Y-координата пина
+ */
+var setAddressCoords = function (x, y) {
+  address.value = x + ', ' + y;
 };
 
 mainPin.addEventListener('mousedown', function (evt) {
@@ -210,21 +206,21 @@ mainPin.addEventListener('mousedown', function (evt) {
       mainPin.style.left = (map.offsetWidth - MAIN_PIN_WIDTH) + 'px';
     }
 
-    if (mainPin.offsetTop < MIN_Y) {
-      mainPin.style.top = MIN_Y + 'px';
+    if (mainPin.offsetTop < MIN_Y - MAIN_PIN_HEIGHT) {
+      mainPin.style.top = (MIN_Y - MAIN_PIN_HEIGHT) + 'px';
     }
 
     if (mainPin.offsetTop > MAX_Y - MAIN_PIN_HEIGHT) {
       mainPin.style.top = (MAX_Y - MAIN_PIN_HEIGHT) + 'px';
     }
 
-    getAddressCoords();
+    setAddressCoords(mainPin.offsetLeft + MAIN_PIN_WIDTH, mainPin.offsetTop + MAIN_PIN_HEIGHT);
   };
 
   var onMainPinMouseUp = function (upEvt) {
     upEvt.preventDefault();
 
-    getAddressCoords();
+    setAddressCoords(mainPin.offsetLeft + MAIN_PIN_WIDTH, mainPin.offsetTop + MAIN_PIN_HEIGHT);
     document.removeEventListener('mousemove', onMainPinMouseMove);
     document.removeEventListener('mouseup', onMainPinMouseUp);
   };
