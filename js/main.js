@@ -28,6 +28,7 @@ var houseTypeSelect = adForm.querySelector('#type');
 var pricePerNight = adForm.querySelector('#price');
 var timein = adForm.querySelector('#timein');
 var timeout = adForm.querySelector('#timeout');
+var activated = false;
 /**
  * Функция получения координаты x метки на карте
  * @return {number} целое число, координата середины метки
@@ -113,15 +114,6 @@ for (i = 0; i < offers.length; i++) {
 }
 
 /**
- * Функция получения координаты элемента mainPin
- * @param {string} position 'Left' или 'Top
- * @param {number} pinSize размер элемента mainPin
- * @return {number} координата элемента mainPin
- */
-var getAddressCoord = function (position, pinSize) {
-  return mainPin['offset' + position] + pinSize;
-};
-/**
  * Функция изменяет значение поля input#price в зависимости от выбранного
  * option в houseTypeSelect
  * @param {object} evt Event
@@ -153,13 +145,13 @@ var initial = function () {
     mapFilters.children[i].disabled = true;
   }
 
-  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_WIDTH / 2);
+  setAddressCoords(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2, mainPin.offsetTop + MAIN_PIN_WIDTH / 2);
 };
 
 /**
  * Функция перевода страницы в активный режим
  */
-var onMainPinClick = function () {
+var activatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   for (i = 0; i < adForm.children.length; i++) {
@@ -168,17 +160,78 @@ var onMainPinClick = function () {
   for (i = 0; i < mapFilters.children.length; i++) {
     mapFilters.children[i].disabled = false;
   }
-};
-
-var onMainPinMouseUp = function () {
-  address.value = getAddressCoord('Left', MAIN_PIN_WIDTH / 2) + ', ' + getAddressCoord('Top', MAIN_PIN_HEIGHT);
-  // Добавление фрагмента в .map__pins
   mapPins.appendChild(fragment);
 };
 
+/**
+ * Функция подстановки координат пина в поле адрес
+ * @param {number} x Х-координата пина
+ * @param {number} y Y-координата пина
+ */
+var setAddressCoords = function (x, y) {
+  address.value = x + ', ' + y;
+};
+
+mainPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMainPinMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    if (!activated) {
+      activated = true;
+      activatePage();
+    }
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+
+    if (mainPin.offsetLeft < 0) {
+      mainPin.style.left = 0 + 'px';
+    }
+
+    if (mainPin.offsetLeft > map.offsetWidth - MAIN_PIN_WIDTH) {
+      mainPin.style.left = (map.offsetWidth - MAIN_PIN_WIDTH) + 'px';
+    }
+
+    if (mainPin.offsetTop < MIN_Y - MAIN_PIN_HEIGHT) {
+      mainPin.style.top = (MIN_Y - MAIN_PIN_HEIGHT) + 'px';
+    }
+
+    if (mainPin.offsetTop > MAX_Y - MAIN_PIN_HEIGHT) {
+      mainPin.style.top = (MAX_Y - MAIN_PIN_HEIGHT) + 'px';
+    }
+
+    setAddressCoords(mainPin.offsetLeft + MAIN_PIN_WIDTH, mainPin.offsetTop + MAIN_PIN_HEIGHT);
+  };
+
+  var onMainPinMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    setAddressCoords(mainPin.offsetLeft + MAIN_PIN_WIDTH, mainPin.offsetTop + MAIN_PIN_HEIGHT);
+    document.removeEventListener('mousemove', onMainPinMouseMove);
+    document.removeEventListener('mouseup', onMainPinMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMainPinMouseMove);
+  document.addEventListener('mouseup', onMainPinMouseUp);
+});
+
 initial();
-mainPin.addEventListener('click', onMainPinClick);
-mainPin.addEventListener('mouseup', onMainPinMouseUp);
+
+// mainPin.addEventListener('mouseup', onMainPinMouseUp);
 houseTypeSelect.addEventListener('change', function (evt) {
   onHouseTypeSelectChange(evt);
 });
