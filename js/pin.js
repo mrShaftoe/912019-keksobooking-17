@@ -19,7 +19,7 @@
     pinElement.style.left = offer.location.x - PIN_HALF_WIDTH + 'px';
     pinElement.style.top = offer.location.y - PIN_HEIGHT + 'px';
     pinElementImg.src = offer.author.avatar;
-    pinElementImg.alt = offer.offer.type;
+    pinElementImg.alt = offer.offer.title;
 
     return pinElement;
   };
