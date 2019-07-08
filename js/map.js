@@ -1,9 +1,8 @@
 'use strict';
 
 (function () {
-  var OFFERS_QUANTITY = 8;
+  var OFFERS_QUANTITY = 5;
   var map = window.MapData.map;
-  var mapPins = map.querySelector('.map__pins');
   var mainPin = window.MainPin.mainPin;
   var adForm = document.querySelector('.ad-form');
   var mapFilters = map.querySelector('.map__filters');
@@ -13,13 +12,17 @@
       .querySelector('.error');
   var errorButton = errorTemplate.querySelector('.error__button');
   var activated = false;
-
+  var offers = [];
   var removeErrorWindow = function () {
     var errorWindow = document.querySelector('.error');
     if (errorWindow) {
       errorButton.disabled = false;
       errorWindow.parentNode.removeChild(errorWindow);
     }
+  };
+
+  var updatePins = function () {
+    window.renderPins(window.filterOffers(offers.slice()), OFFERS_QUANTITY);
   };
 
   var onErrorButtonClick = function (evt) {
@@ -37,16 +40,21 @@
     errorButton.addEventListener('click', onErrorButtonClick);
     main.appendChild(errorTemplate);
   };
+
   var onSuccess = function (response) {
+    offers = response.filter(function (it) {
+      return it.offer.type;
+    });
     removeErrorWindow();
-    mapPins.appendChild(window.makeFragment(response, OFFERS_QUANTITY));
+    adForm.classList.remove('ad-form--disabled');
+    updatePins();
   };
+
   /**
   * Функция перевода страницы в активный режим
   */
   var activatePage = function () {
     map.classList.remove('map--faded');
-    adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < adForm.children.length; i++) {
       adForm.children[i].disabled = false;
     }
@@ -114,5 +122,9 @@
 
     document.addEventListener('mousemove', onMainPinMouseMove);
     document.addEventListener('mouseup', onMainPinMouseUp);
+  });
+
+  mapFilters.addEventListener('change', function () {
+    window.debounce(updatePins);
   });
 })();

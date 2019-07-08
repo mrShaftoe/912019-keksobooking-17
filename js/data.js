@@ -13,11 +13,11 @@
     HEIGHT: 81
   };
 
-  window.makeFragment = function (response, size) {
+  window.makeFragment = function (data, size) {
     var fragment = document.createDocumentFragment();
-    var fragmentSize = response.length < size ? response.length : size;
+    var fragmentSize = data.length < size ? data.length : size;
     for (var i = 0; i < fragmentSize; i++) {
-      fragment.appendChild(window.renderPin(response[i]));
+      fragment.appendChild(window.renderPin(data[i]));
     }
     return fragment;
   };
