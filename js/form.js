@@ -14,8 +14,8 @@
   var pricePerNight = adForm.querySelector('#price');
   var timein = adForm.querySelector('#timein');
   var timeout = adForm.querySelector('#timeout');
-  var mapFilters = window.MapData.map.querySelector('.map__filters');
-  var mainPin = window.MainPin.mainPin;
+  var mapFilters = document.querySelector('.map__filters');
+  var mainPin = document.querySelector('.map__pin--main');
 
   /**
   * Функция изменяет значение поля input#price в зависимости от выбранного

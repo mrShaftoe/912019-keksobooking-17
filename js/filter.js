@@ -1,7 +1,22 @@
 'use strict';
 
 (function () {
-  var filters = document.querySelectorAll('.map__filters select, .map__filters input[type="checkbox"]');
+  var mapFilters = document.querySelector('.map__filters');
+  var filters = mapFilters.querySelectorAll('select, input[type="checkbox"]');
+  var filtersResults = {};
+  var initialData;
+
+  var isSelect = function (elem) {
+    return elem.tagName === 'SELECT';
+  };
+
+  var isCheckbox = function (elem) {
+    return elem.tagName === 'INPUT' && elem.type === 'checkbox';
+  };
+
+  var isCheckboxChecked = function (checkbox) {
+    return checkbox.checked;
+  };
 
   var callbacks = {
     'housing-type': function (option, item) {
@@ -26,36 +41,95 @@
     },
 
     'housing-rooms': function (option, item) {
-      return option.value === item.offer.rooms.toString();
+      return Number(option.value) === item.offer.rooms;
     },
 
     'housing-guests': function (option, item) {
-      return option.value === '0' ? item.offer.guests === parseInt(option.value, 10) : item.offer.guests >= parseInt(option.value, 10);
+      return option.value === '0' ? item.offer.guests === Number(option.value) : item.offer.guests >= Number(option.value);
     },
 
     'features': function (checkbox, item) {
       var isInOfferFeatures = function (elem) {
         return elem === checkbox.value;
       };
+      return item.offer.features.some(function (it) {
+        return isInOfferFeatures(it);
+      });
+    }
+  };
 
-      if (checkbox.checked) {
-        return item.offer.features.some(isInOfferFeatures);
+  var updateFiltersResults = function (elem) {
+    if (isSelect(elem)) {
+      if (elem.value === 'any') {
+        filtersResults[elem.name] = initialData;
+      } else {
+        filtersResults[elem.name] = initialData.filter(function (it) {
+          return callbacks[elem.name](elem, it);
+        });
       }
-      return true;
+    } else if (isCheckbox(elem)) {
+      if (isCheckboxChecked(elem)) {
+        filtersResults[elem.value] = initialData.filter(function (it) {
+          return callbacks[elem.name](elem, it);
+        });
+      } else {
+        filtersResults[elem.value] = initialData;
+      }
+    }
+  };
+
+  var concatAllFitersResults = function () {
+    var newData = [];
+    for (var item in filtersResults) {
+      if (Object.prototype.hasOwnProperty.call(filtersResults, item)) {
+        newData = newData.concat(filtersResults[item]);
+      }
     }
 
+    return newData;
   };
 
-  var filterBy = function (option, item) {
-    return option.value === 'any' || callbacks[option.name](option, item);
+  var getAllUniquesCount = function (data) {
+    return data.reduce(function (acc, el) {
+      var idx = initialData.indexOf(el);
+      acc[idx] = (acc[idx] || 0) + 1;
+      return acc;
+    }, {});
   };
 
-  window.filterOffers = function (data) {
-    filters.forEach(function (option) {
-      data = data.filter(function (it) {
-        return filterBy(option, it);
+  var getFilteredData = function (counterObj) {
+    var filteredData = [];
+    for (var item in counterObj) {
+      if (Object.prototype.hasOwnProperty.call(counterObj, item)) {
+        if (counterObj[item] === filters.length) {
+          filteredData.push(initialData[item]);
+        }
+      }
+    }
+    return filteredData;
+  };
+
+  var onFilterChange = function (evt) {
+    updateFiltersResults(evt.target);
+    var newData = getFilteredData(getAllUniquesCount(concatAllFitersResults()));
+    window.pins.appendToMap(newData);
+  };
+
+  window.mapFilterInit = function (data) {
+    initialData = data.slice();
+    filters.forEach(function (filter) {
+      if (isSelect(filter)) {
+        filtersResults[filter.name] = initialData;
+      } else {
+        filtersResults[filter.value] = initialData;
+      }
+    });
+    mapFilters.addEventListener('change', function (evt) {
+      window.debounce(function () {
+        onFilterChange(evt);
       });
     });
-    return data;
   };
+
+
 })();

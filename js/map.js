@@ -2,8 +2,13 @@
 
 (function () {
   var OFFERS_QUANTITY = 5;
-  var map = window.MapData.map;
-  var mainPin = window.MainPin.mainPin;
+  var map = document.querySelector('.map');
+  window.MapData = {
+    MIN_Y: 130,
+    MAX_Y: 630
+  };
+
+  var mainPin = document.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
   var mapFilters = map.querySelector('.map__filters');
   var main = document.querySelector('main');
@@ -12,17 +17,13 @@
       .querySelector('.error');
   var errorButton = errorTemplate.querySelector('.error__button');
   var activated = false;
-  var offers = [];
+
   var removeErrorWindow = function () {
     var errorWindow = document.querySelector('.error');
     if (errorWindow) {
       errorButton.disabled = false;
       errorWindow.parentNode.removeChild(errorWindow);
     }
-  };
-
-  var updatePins = function () {
-    window.renderPins(window.filterOffers(offers.slice()), OFFERS_QUANTITY);
   };
 
   var onErrorButtonClick = function (evt) {
@@ -40,21 +41,18 @@
     errorButton.addEventListener('click', onErrorButtonClick);
     main.appendChild(errorTemplate);
   };
-
   var onSuccess = function (response) {
-    offers = response.filter(function (it) {
-      return it.offer.type;
-    });
     removeErrorWindow();
-    adForm.classList.remove('ad-form--disabled');
-    updatePins();
+    window.pins.setShownQuantity(OFFERS_QUANTITY);
+    window.mapFilterInit(response);
+    window.pins.appendToMap(response);
   };
-
   /**
   * Функция перевода страницы в активный режим
   */
   var activatePage = function () {
     map.classList.remove('map--faded');
+    adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < adForm.children.length; i++) {
       adForm.children[i].disabled = false;
     }
@@ -97,8 +95,8 @@
         mainPin.style.left = 1 - window.MainPin.WIDTH / 2 + 'px';
       }
 
-      if (mainPin.offsetLeft > window.MapData.map.offsetWidth - window.MainPin.WIDTH / 2 - 1) {
-        mainPin.style.left = (window.MapData.map.offsetWidth - window.MainPin.WIDTH / 2 - 1) + 'px';
+      if (mainPin.offsetLeft > map.offsetWidth - window.MainPin.WIDTH / 2 - 1) {
+        mainPin.style.left = (map.offsetWidth - window.MainPin.WIDTH / 2 - 1) + 'px';
       }
 
       if (mainPin.offsetTop < window.MapData.MIN_Y - window.MainPin.HEIGHT) {
@@ -122,9 +120,5 @@
 
     document.addEventListener('mousemove', onMainPinMouseMove);
     document.addEventListener('mouseup', onMainPinMouseUp);
-  });
-
-  mapFilters.addEventListener('change', function () {
-    window.debounce(updatePins);
   });
 })();
