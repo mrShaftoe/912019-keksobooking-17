@@ -17,7 +17,7 @@
  * @param {object} data объект, содержащий данные предложения
  * @return {object} pinElement DOM-элемент
  */
-  window.renderPin = function (data) {
+  var renderPin = function (data) {
     var pinElement = pinTemplate.cloneNode(true);
     var pinElementImg = pinElement.querySelector('img');
     pinElement.style.left = data.location.x - PIN_HALF_WIDTH + 'px';
@@ -32,7 +32,7 @@
     var fragment = document.createDocumentFragment();
     var fragmentSize = data.length < pinsQuantity ? data.length : pinsQuantity;
     for (var i = 0; i < fragmentSize; i++) {
-      fragment.appendChild(window.renderPin(data[i]));
+      fragment.appendChild(renderPin(data[i]));
     }
     return fragment;
   };
