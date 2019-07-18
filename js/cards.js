@@ -8,7 +8,6 @@
 
   var map = document.querySelector('.map');
   var mapPins = map.querySelector('.map__pins');
-  var mapFiltersContainer = map.querySelector('.map__filters-container');
 
   var HousingTypes = {
     'flat': 'Квартира',
@@ -63,23 +62,14 @@
     return card;
   };
 
-  var makeFragment = function (data) {
-    var fragment = document.createDocumentFragment();
-    data.forEach(function (it) {
-      fragment.appendChild(renderCard(it));
-    });
-    return fragment;
-  };
-
-  var appendCardsToMap = function (data) {
-    mapPins.appendChild(makeFragment(data));
-    var card = mapPins.querySelector('.map__card').cloneNode(true);
+  var appendCardToMap = function (data) {
+    mapPins.appendChild(renderCard(data[0]));
+    var card = mapPins.querySelector('.map__card');
     card.classList.remove('hidden');
-    map.insertBefore(card, mapFiltersContainer);
   };
 
   window.cards = {
-    append: appendCardsToMap
+    append: appendCardToMap
   };
 
 })();
