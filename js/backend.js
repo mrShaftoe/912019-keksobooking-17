@@ -1,6 +1,6 @@
 'use strict';
 
-window.backend = (function () {
+(function () {
   var SAVE_URL = 'https://js.dump.academy/keksobooking';
   var LOAD_URL = SAVE_URL + '/data';
 
@@ -24,7 +24,7 @@ window.backend = (function () {
     });
   };
 
-  return {
+  window.backend = {
     save: function (data, onLoad, onError) {
       var xhr = new XMLHttpRequest();
       createXhr(xhr, SAVE_URL, 'POST', onLoad, onError);

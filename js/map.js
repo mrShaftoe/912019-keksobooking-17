@@ -3,9 +3,9 @@
 (function () {
   var OFFERS_QUANTITY = 5;
   var map = document.querySelector('.map');
-  window.MapData = {
-    MIN_Y: 130,
-    MAX_Y: 630
+  var MapLimitsY = {
+    MIN: 130,
+    MAX: 630
   };
 
   var mainPin = document.querySelector('.map__pin--main');
@@ -42,10 +42,14 @@
     main.appendChild(errorTemplate);
   };
   var onSuccess = function (response) {
+    var data = response.filter(function (it) {
+      return Boolean(it.offer.type);
+    });
     removeErrorWindow();
     window.pins.setShownQuantity(OFFERS_QUANTITY);
-    window.mapFilterInit(response);
-    window.pins.appendToMap(response);
+    window.mapFilterInit(data);
+    window.pins.appendToMap(data);
+    window.cards.append(data);
   };
   /**
   * Функция перевода страницы в активный режим
@@ -99,12 +103,12 @@
         mainPin.style.left = (map.offsetWidth - window.MainPin.WIDTH / 2 - 1) + 'px';
       }
 
-      if (mainPin.offsetTop < window.MapData.MIN_Y - window.MainPin.HEIGHT) {
-        mainPin.style.top = (window.MapData.MIN_Y - window.MainPin.HEIGHT) + 'px';
+      if (mainPin.offsetTop < MapLimitsY.MIN - window.MainPin.HEIGHT) {
+        mainPin.style.top = (MapLimitsY.MIN - window.MainPin.HEIGHT) + 'px';
       }
 
-      if (mainPin.offsetTop > window.MapData.MAX_Y - window.MainPin.HEIGHT) {
-        mainPin.style.top = (window.MapData.MAX_Y - window.MainPin.HEIGHT) + 'px';
+      if (mainPin.offsetTop > MapLimitsY.MAX - window.MainPin.HEIGHT) {
+        mainPin.style.top = (MapLimitsY.MAX - window.MainPin.HEIGHT) + 'px';
       }
 
       window.setAddressCoords(mainPin.offsetLeft + window.MainPin.WIDTH, mainPin.offsetTop + window.MainPin.HEIGHT);

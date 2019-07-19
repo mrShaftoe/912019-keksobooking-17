@@ -3,7 +3,7 @@
 (function () {
   var mapFilters = document.querySelector('.map__filters');
   var filters = mapFilters.querySelectorAll('select, input[type="checkbox"]');
-  var filtersResults = {};
+  var FiltersResults = {};
   var initialData;
 
   var isSelect = function (elem) {
@@ -18,7 +18,7 @@
     return checkbox.checked;
   };
 
-  var callbacks = {
+  var Callbacks = {
     'housing-type': function (option, item) {
       return option.value === item.offer.type;
     },
@@ -36,7 +36,6 @@
           price = 'high';
           break;
       }
-
       return option.value === price;
     },
 
@@ -61,28 +60,28 @@
   var updateFiltersResults = function (elem) {
     if (isSelect(elem)) {
       if (elem.value === 'any') {
-        filtersResults[elem.name] = initialData;
+        FiltersResults[elem.name] = initialData;
       } else {
-        filtersResults[elem.name] = initialData.filter(function (it) {
-          return callbacks[elem.name](elem, it);
+        FiltersResults[elem.name] = initialData.filter(function (it) {
+          return Callbacks[elem.name](elem, it);
         });
       }
     } else if (isCheckbox(elem)) {
       if (isCheckboxChecked(elem)) {
-        filtersResults[elem.value] = initialData.filter(function (it) {
-          return callbacks[elem.name](elem, it);
+        FiltersResults[elem.value] = initialData.filter(function (it) {
+          return Callbacks[elem.name](elem, it);
         });
       } else {
-        filtersResults[elem.value] = initialData;
+        FiltersResults[elem.value] = initialData;
       }
     }
   };
 
   var concatAllFitersResults = function () {
     var newData = [];
-    for (var item in filtersResults) {
-      if (Object.prototype.hasOwnProperty.call(filtersResults, item)) {
-        newData = newData.concat(filtersResults[item]);
+    for (var item in FiltersResults) {
+      if (Object.prototype.hasOwnProperty.call(FiltersResults, item)) {
+        newData = newData.concat(FiltersResults[item]);
       }
     }
 
@@ -90,8 +89,8 @@
   };
 
   var getAllUniquesCount = function (data) {
-    return data.reduce(function (acc, el) {
-      var idx = initialData.indexOf(el);
+    return data.reduce(function (acc, elem) {
+      var idx = initialData.indexOf(elem);
       acc[idx] = (acc[idx] || 0) + 1;
       return acc;
     }, {});
@@ -119,11 +118,12 @@
     initialData = data.slice();
     filters.forEach(function (filter) {
       if (isSelect(filter)) {
-        filtersResults[filter.name] = initialData;
+        FiltersResults[filter.name] = initialData;
       } else {
-        filtersResults[filter.value] = initialData;
+        FiltersResults[filter.value] = initialData;
       }
     });
+
     mapFilters.addEventListener('change', function (evt) {
       window.debounce(function () {
         onFilterChange(evt);

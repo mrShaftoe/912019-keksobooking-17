@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var HOUSING_MIN_PRICES = {
+  var HousingMinPrices = {
     'bungalo': 0,
     'flat': 1000,
     'house': 5000,
@@ -23,8 +23,8 @@
   * @param {object} evt Event
   */
   var onHouseTypeSelectChange = function (evt) {
-    pricePerNight.min = HOUSING_MIN_PRICES[evt.target.value];
-    pricePerNight.placeholder = HOUSING_MIN_PRICES[evt.target.value];
+    pricePerNight.min = HousingMinPrices[evt.target.value];
+    pricePerNight.placeholder = HousingMinPrices[evt.target.value];
   };
 
   /**
