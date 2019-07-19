@@ -1,13 +1,16 @@
 'use strict';
 
 (function () {
+  var ESC_KEY_CODE = 27;
+
   var cardTemplate = document.querySelector('#card')
       .content
       .querySelector('.map__card');
   var photoTemplate = cardTemplate.querySelector('.popup__photo');
 
+  var card = cardTemplate.cloneNode(true);
+  var cardCloseButtton = card.querySelector('.popup__close');
   var map = document.querySelector('.map');
-  var mapPins = map.querySelector('.map__pins');
 
   var HousingTypes = {
     'flat': 'Квартира',
@@ -23,11 +26,10 @@
     return feature;
   };
 
-  var renderCard = function (cardData) {
-    var card = cardTemplate.cloneNode(true);
+
+  var updateCard = function (cardData) {
     card.querySelector('.popup__title').textContent = cardData.offer.title;
     card.querySelector('.popup__text--address').textContent = cardData.offer.address;
-
     var popupPrice = card.querySelector('.popup__text--price');
     var priceSpan = document.createElement('span');
     priceSpan.textContent = '/ночь';
@@ -57,19 +59,41 @@
     }
 
     card.querySelector('.popup__avatar').src = cardData.author.avatar;
-    card.classList.add('hidden');
-
-    return card;
   };
 
-  var appendCardToMap = function (data) {
-    mapPins.appendChild(renderCard(data[0]));
-    var card = mapPins.querySelector('.map__card');
+  var appendCardToMap = function () {
+    card.classList.add('hidden');
+    map.insertBefore(card, map.querySelector('.map__filters-container'));
+  };
+
+  var closeCard = function () {
+    card.classList.add('hidden');
+    document.removeEventListener('keydown', onEscPress);
+  };
+
+  var onEscPress = function (evt) {
+    evt.preventDefault();
+    if (evt.keyCode === ESC_KEY_CODE) {
+      closeCard();
+    }
+  };
+
+  var onCloseButtonClick = function (evt) {
+    evt.preventDefault();
+    closeCard();
+  };
+
+
+  var showCard = function (data) {
+    updateCard(data);
     card.classList.remove('hidden');
+    document.addEventListener('keydown', onEscPress);
+    cardCloseButtton.addEventListener('click', onCloseButtonClick);
   };
 
   window.cards = {
-    append: appendCardToMap
+    append: appendCardToMap,
+    show: showCard
   };
 
 })();
