@@ -12,6 +12,11 @@
     .querySelector('.map__pin');
   var mapPins = document.querySelector('.map__pins');
   var pinsQuantity;
+
+  var onPinClick = function (data) {
+    window.cards.show(data);
+  };
+
   /**
  * Функция создания нового пина
  * @param {object} data объект, содержащий данные предложения
@@ -20,10 +25,16 @@
   var renderPin = function (data) {
     var pinElement = pinTemplate.cloneNode(true);
     var pinElementImg = pinElement.querySelector('img');
+    pinElement.dataset.id = data.id;
     pinElement.style.left = data.location.x - PIN_HALF_WIDTH + 'px';
     pinElement.style.top = data.location.y - PIN_HEIGHT + 'px';
     pinElementImg.src = data.author.avatar;
     pinElementImg.alt = data.offer.title;
+
+    pinElement.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      onPinClick(data);
+    });
 
     return pinElement;
   };
