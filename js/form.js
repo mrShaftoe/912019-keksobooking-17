@@ -53,20 +53,6 @@
     address.value = x + ', ' + y;
   };
 
-  // var setCapacityOptions = function (roomsQuantity) {
-  //   var rooms = roomsQuantity === '100' ? 0 : Number(roomsQuantity);
-  //   var options = Array.prototype.filter.call(capacityOptions, function (it) {
-  //     var value = Number(it.value);
-  //     return rooms === 0 ? rooms === value : value && rooms >= value;
-  //   });
-  //   capacityOptions.forEach(function (it) {
-  //     it.disabled = false;
-  //     if (options.indexOf(it) === -1) {
-  //       it.disabled = true;
-  //     }
-  //   });
-  // };
-
   var changeCapacityOptions = function (value) {
     capacity.setCustomValidity('');
     Array.prototype.forEach.call(capacity.children, function (it) {
