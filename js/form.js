@@ -11,11 +11,19 @@
   var adForm = document.querySelector('.ad-form');
   var address = adForm.querySelector('#address');
   var houseTypeSelect = adForm.querySelector('#type');
+  var roomsNumber = adForm.querySelector('#room_number');
+  var capacity = adForm.querySelector('#capacity');
   var pricePerNight = adForm.querySelector('#price');
   var timein = adForm.querySelector('#timein');
   var timeout = adForm.querySelector('#timeout');
   var mapFilters = document.querySelector('.map__filters');
   var mainPin = document.querySelector('.map__pin--main');
+  var RoomsCapacity = {
+    '1': ['1'],
+    '2': ['1', '2'],
+    '3': ['1', '2', '3'],
+    '100': ['0']
+  };
 
   /**
   * Функция изменяет значение поля input#price в зависимости от выбранного
@@ -45,6 +53,19 @@
     address.value = x + ', ' + y;
   };
 
+  var changeCapacityOptions = function (value) {
+    capacity.setCustomValidity('');
+    Array.prototype.forEach.call(capacity.children, function (it) {
+      it.disabled = false;
+      if (RoomsCapacity[value].indexOf(it.value) === -1) {
+        it.disabled = true;
+      }
+    });
+    if (RoomsCapacity[value].indexOf(capacity.value) === -1) {
+      capacity.setCustomValidity('Выбранное количество гостей не соответствует выбранному количеству комнат');
+    }
+  };
+
   /**
   * Функция блокировки полей форм и подстановки стартовых координат в поле address
   * при запуске страницы
@@ -58,6 +79,7 @@
     for (i = 0; i < mapFilters.children.length; i++) {
       mapFilters.children[i].disabled = true;
     }
+    changeCapacityOptions(roomsNumber.value);
     window.setAddressCoords(mainPin.offsetLeft + window.MainPin.WIDTH / 2, mainPin.offsetTop + window.MainPin.WIDTH / 2);
   };
 
@@ -71,5 +93,11 @@
   });
   timeout.addEventListener('change', function (evt) {
     onTimeSelectChange(evt, timein);
+  });
+  roomsNumber.addEventListener('change', function (evt) {
+    changeCapacityOptions(evt.target.value);
+  });
+  capacity.addEventListener('change', function () {
+    capacity.setCustomValidity('');
   });
 })();
