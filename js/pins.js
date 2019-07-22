@@ -12,7 +12,11 @@
     .querySelector('.map__pin');
   var mapPins = document.querySelector('.map__pins');
   var pinsQuantity;
-
+  var mainPin = mapPins.querySelector('.map__pin--main');
+  window.MainPinCoords = {
+    x: mainPin.style.left,
+    y: mainPin.style.top
+  };
   var onPinClick = function (data) {
     window.cards.show(data);
   };

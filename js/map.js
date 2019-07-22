@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var OFFERS_QUANTITY = 5;
   var map = document.querySelector('.map');
   var MapLimitsY = {
     MIN: 130,
@@ -11,46 +10,7 @@
   var mainPin = document.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
   var mapFilters = map.querySelector('.map__filters');
-  var main = document.querySelector('main');
-  var errorTemplate = document.querySelector('#error')
-      .content
-      .querySelector('.error');
-  var errorButton = errorTemplate.querySelector('.error__button');
-  var activated = false;
 
-  var removeErrorWindow = function () {
-    var errorWindow = document.querySelector('.error');
-    if (errorWindow) {
-      errorButton.disabled = false;
-      errorWindow.parentNode.removeChild(errorWindow);
-    }
-  };
-
-  var onErrorButtonClick = function (evt) {
-    evt.preventDefault();
-    errorButton.disabled = true;
-    errorButton.removeEventListener('click', onErrorButtonClick);
-    window.backend.load(
-        onSuccess,
-        onError
-    );
-  };
-
-  var onError = function () {
-    removeErrorWindow();
-    errorButton.addEventListener('click', onErrorButtonClick);
-    main.appendChild(errorTemplate);
-  };
-  var onSuccess = function (response) {
-    var data = response.filter(function (it) {
-      return Boolean(it.offer.type);
-    });
-    removeErrorWindow();
-    window.pins.setShownQuantity(OFFERS_QUANTITY);
-    window.mapFilterInit(data);
-    window.pins.appendToMap(data);
-    window.cards.append(data);
-  };
   /**
   * Функция перевода страницы в активный режим
   */
@@ -60,12 +20,16 @@
     for (var i = 0; i < adForm.children.length; i++) {
       adForm.children[i].disabled = false;
     }
+
     for (i = 0; i < mapFilters.children.length; i++) {
       mapFilters.children[i].disabled = false;
     }
+
     window.backend.load(
-        onSuccess,
-        onError
+        window.onDataLoad,
+        function () {
+          window.error.show();
+        }
     );
   };
 
@@ -78,8 +42,8 @@
 
     var onMainPinMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
-      if (!activated) {
-        activated = true;
+      if (!window.activated) {
+        window.activated = true;
         activatePage();
       }
       var shift = {

@@ -72,7 +72,6 @@
   };
 
   var onEscPress = function (evt) {
-    evt.preventDefault();
     if (evt.keyCode === ESC_KEY_CODE) {
       closeCard();
     }
