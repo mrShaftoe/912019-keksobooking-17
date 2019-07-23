@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var PINS_QUANTITY = 5;
   var mapFilters = document.querySelector('.map__filters');
   var filters = mapFilters.querySelectorAll('select, input[type="checkbox"]');
   var FiltersResults = {};
@@ -111,16 +112,15 @@
   var onFilterChange = function (evt) {
     updateFiltersResults(evt.target);
     var newData = getFilteredData(getAllUniquesCount(concatAllFitersResults()));
-    window.pins.appendToMap(newData);
+    window.pins.append(newData);
   };
 
-  window.mapFilterInit = function (data) {
-    initialData = data.slice();
-    filters.forEach(function (filter) {
-      if (isSelect(filter)) {
-        FiltersResults[filter.name] = initialData;
+  var mapFilterInit = function () {
+    filters.forEach(function (it) {
+      if (isSelect(it)) {
+        FiltersResults[it.name] = initialData;
       } else {
-        FiltersResults[filter.value] = initialData;
+        FiltersResults[it.value] = initialData;
       }
     });
 
@@ -131,5 +131,13 @@
     });
   };
 
-
+  window.onDataLoad = function (response) {
+    initialData = response.filter(function (it) {
+      return it.offer.type;
+    });
+    window.pins.setShownQuantity(PINS_QUANTITY);
+    mapFilterInit(initialData);
+    window.pins.append(initialData);
+    window.cards.append(initialData);
+  };
 })();
