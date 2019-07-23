@@ -112,7 +112,7 @@
   var onFilterChange = function (evt) {
     updateFiltersResults(evt.target);
     var newData = getFilteredData(getAllUniquesCount(concatAllFitersResults()));
-    window.pins.appendToMap(newData);
+    window.pins.append(newData);
   };
 
   var mapFilterInit = function () {
@@ -133,14 +133,11 @@
 
   window.onDataLoad = function (response) {
     initialData = response.filter(function (it) {
-      return Boolean(it.offer.type);
+      return it.offer.type;
     });
-    window.error.remove();
     window.pins.setShownQuantity(PINS_QUANTITY);
     mapFilterInit(initialData);
-    window.pins.appendToMap(initialData);
+    window.pins.append(initialData);
     window.cards.append(initialData);
   };
-
-
 })();

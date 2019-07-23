@@ -67,7 +67,7 @@
   };
 
   window.pins = {
-    appendToMap: appendPinsToMap,
+    append: appendPinsToMap,
     setShownQuantity: setShownPinsQuantity
   };
 

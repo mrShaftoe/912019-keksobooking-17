@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ENTER_KEY_CODE = 13;
   var map = document.querySelector('.map');
   var MapLimitsY = {
     MIN: 130,
@@ -15,6 +16,11 @@
   * Функция перевода страницы в активный режим
   */
   var activatePage = function () {
+    if (window.activated) {
+      return;
+    }
+    window.activated = true;
+
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < adForm.children.length; i++) {
@@ -27,14 +33,22 @@
 
     window.backend.load(
         window.onDataLoad,
-        function () {
-          window.error.show();
-        }
+        window.error.show
     );
   };
 
+  var onEnterPress = function (evt) {
+    if (evt.keyCode === ENTER_KEY_CODE) {
+      evt.preventDefault();
+      activatePage();
+    }
+  };
+
+  mainPin.addEventListener('keydown', onEnterPress);
+
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
+    activatePage();
     var startCoords = {
       x: evt.clientX,
       y: evt.clientY

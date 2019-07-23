@@ -90,7 +90,7 @@
   var initial = function () {
     adForm.reset();
     window.activated = false;
-    window.pins.appendToMap([]);
+    window.pins.append([]);
     map.classList.add('map--faded');
     adForm.classList.add('ad-form--disabled');
     mainPin.style.left = window.MainPinCoords.x;
@@ -107,7 +107,6 @@
   };
 
   window.onFormSaveSuccess = function () {
-    window.error.remove();
     initial();
     showSuccessWindow();
   };
@@ -132,13 +131,10 @@
 
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    var data = new FormData(adForm);
     window.backend.save(
-        data,
+        new FormData(adForm),
         window.onFormSaveSuccess,
-        function () {
-          window.error.show(data);
-        }
+        window.error.show
     );
   });
 })();
