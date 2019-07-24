@@ -49,7 +49,7 @@
    * @param {number} x Х-координата пина
    * @param {number} y Y-координата пина
    */
-  window.setAddressCoords = function (x, y) {
+  var setAddress = function (x, y) {
     address.value = x + ', ' + y;
   };
 
@@ -103,10 +103,10 @@
       mapFilters.children[i].disabled = true;
     }
     changeCapacityOptions(roomsNumber.value);
-    window.setAddressCoords(mainPin.offsetLeft + window.MainPin.WIDTH / 2, mainPin.offsetTop + window.MainPin.WIDTH / 2);
+    setAddress(mainPin.offsetLeft + window.pins.MainPinSizes.width / 2, mainPin.offsetTop + window.pins.MainPinSizes.width / 2);
   };
 
-  window.onFormSaveSuccess = function () {
+  var onFormSaveSuccess = function () {
     initial();
     showSuccessWindow();
   };
@@ -133,8 +133,13 @@
     evt.preventDefault();
     window.backend.save(
         new FormData(adForm),
-        window.onFormSaveSuccess,
+        onFormSaveSuccess,
         window.error.show
     );
   });
+  adForm.addEventListener('reset', initial);
+
+  window.form = {
+    setAddress: setAddress,
+  };
 })();

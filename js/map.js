@@ -3,14 +3,54 @@
 (function () {
   var ENTER_KEY_CODE = 13;
   var map = document.querySelector('.map');
-  var MapLimitsY = {
-    MIN: 130,
-    MAX: 630
-  };
-
   var mainPin = document.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
   var mapFilters = map.querySelector('.map__filters');
+  var MapLimits = {
+    left: 1,
+    right: map.offsetWidth - 1,
+    top: 130,
+    bottom: 630
+  };
+
+  var Coordinates = function (x, y) {
+    this.x = x;
+    this.y = y;
+  };
+
+  Coordinates.prototype.setXY = function (x, y) {
+    this.x = x;
+    this.y = y;
+  };
+
+  var PinCoordinates = function (x, y, limits, sizes) {
+    Coordinates.call(this, x, y);
+    this._limits = limits;
+    this._sizes = sizes;
+  };
+  PinCoordinates.prototype.setXY = function (x, y) {
+    switch (true) {
+      case x < this._limits.left - this._sizes.width / 2:
+        this.x = this._limits.left - this._sizes.width / 2;
+        break;
+      case x > this._limits.right - this._sizes.width / 2:
+        this.x = this._limits.right - this._sizes.width / 2;
+        break;
+      default:
+        this.x = x;
+    }
+
+    switch (true) {
+      case y < this._limits.top - this._sizes.height:
+        this.y = this._limits.top - this._sizes.height;
+        break;
+      case y > this._limits.bottom - this._sizes.height:
+        this.y = this._limits.bottom - this._sizes.height;
+        break;
+      default:
+        this.y = y;
+    }
+  };
 
   /**
   * Функция перевода страницы в активный режим
@@ -49,53 +89,27 @@
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     activatePage();
-    var startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
-
+    var startCoords = new Coordinates(evt.clientX, evt.clientY);
+    var mainPinCoords = new PinCoordinates(mainPin.offsetLeft, mainPin.offsetTop, MapLimits, window.pins.MainPinSizes);
     var onMainPinMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       if (!window.activated) {
         window.activated = true;
         activatePage();
       }
-      var shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
-      };
+      var shift = new Coordinates(startCoords.x - moveEvt.clientX, startCoords.y - moveEvt.clientY);
+      startCoords.setXY(moveEvt.clientX, moveEvt.clientY);
+      mainPinCoords.setXY(mainPin.offsetLeft - shift.x, mainPin.offsetTop - shift.y);
+      mainPin.style.left = mainPinCoords.x + 'px';
+      mainPin.style.top = mainPinCoords.y + 'px';
 
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-
-      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
-      mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
-
-      if (mainPin.offsetLeft < 1 - window.MainPin.WIDTH / 2) {
-        mainPin.style.left = 1 - window.MainPin.WIDTH / 2 + 'px';
-      }
-
-      if (mainPin.offsetLeft > map.offsetWidth - window.MainPin.WIDTH / 2 - 1) {
-        mainPin.style.left = (map.offsetWidth - window.MainPin.WIDTH / 2 - 1) + 'px';
-      }
-
-      if (mainPin.offsetTop < MapLimitsY.MIN - window.MainPin.HEIGHT) {
-        mainPin.style.top = (MapLimitsY.MIN - window.MainPin.HEIGHT) + 'px';
-      }
-
-      if (mainPin.offsetTop > MapLimitsY.MAX - window.MainPin.HEIGHT) {
-        mainPin.style.top = (MapLimitsY.MAX - window.MainPin.HEIGHT) + 'px';
-      }
-
-      window.setAddressCoords(mainPin.offsetLeft + window.MainPin.WIDTH, mainPin.offsetTop + window.MainPin.HEIGHT);
+      window.form.setAddress(mainPin.offsetLeft + window.pins.MainPinSizes.width / 2, mainPin.offsetTop + window.pins.MainPinSizes.height);
     };
 
     var onMainPinMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      window.window.setAddressCoords(mainPin.offsetLeft + window.MainPin.WIDTH, mainPin.offsetTop + window.MainPin.HEIGHT);
+      window.form.setAddress(mainPin.offsetLeft + window.pins.MainPinSizes.width / 2, mainPin.offsetTop + window.pins.MainPinSizes.height);
       document.removeEventListener('mousemove', onMainPinMouseMove);
       document.removeEventListener('mouseup', onMainPinMouseUp);
     };

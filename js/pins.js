@@ -1,12 +1,12 @@
 'use strict';
 
 (function () {
-  var PIN_HALF_WIDTH = 25;
-  var PIN_HEIGHT = 70;
-  window.MainPin = {
-    WIDTH: 65,
-    HEIGHT: 81
+  var PinSizes = function (width, height) {
+    this.width = width;
+    this.height = height;
   };
+  var OfferPinSizes = new PinSizes(50, 70);
+  var MainPinSizes = new PinSizes(65, 81);
   var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
@@ -30,8 +30,8 @@
     var pinElement = pinTemplate.cloneNode(true);
     var pinElementImg = pinElement.querySelector('img');
     pinElement.dataset.id = data.id;
-    pinElement.style.left = data.location.x - PIN_HALF_WIDTH + 'px';
-    pinElement.style.top = data.location.y - PIN_HEIGHT + 'px';
+    pinElement.style.left = data.location.x - OfferPinSizes.width / 2 + 'px';
+    pinElement.style.top = data.location.y - OfferPinSizes.height + 'px';
     pinElementImg.src = data.author.avatar;
     pinElementImg.alt = data.offer.title;
 
@@ -68,6 +68,7 @@
 
   window.pins = {
     append: appendPinsToMap,
+    MainPinSizes: MainPinSizes,
     setShownQuantity: setShownPinsQuantity
   };
 
