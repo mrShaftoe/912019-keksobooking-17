@@ -568,7 +568,8 @@ fieldset {
   cursor: pointer;
 }
 
-.ad-form-header__drop-zone:hover {
+.ad-form-header__drop-zone:hover,
+.ad-form-header__drop-zone--hover {
   color: #ff5635;
 }
 
@@ -794,7 +795,8 @@ fieldset {
   cursor: pointer;
 }
 
-.ad-form__drop-zone:hover {
+.ad-form__drop-zone:hover,
+.ad-form__drop-zone--hover {
   color: #ff5635;
 }
 

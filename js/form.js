@@ -20,7 +20,7 @@
   var timein = adForm.querySelector('#timein');
   var timeout = adForm.querySelector('#timeout');
 
-  var avatar;
+  var avatar = null;
   var avatarUploader = adForm.querySelector('#avatar');
   var avatarDropzone = adForm.querySelector('.ad-form-header__drop-zone');
   var avatarPreview = adForm.querySelector('.ad-form-header__preview img');
@@ -29,7 +29,8 @@
   var housingPhotos = {};
   var housingPhotosUploader = adForm.querySelector('#images');
   var housingPhotosDropzone = adForm.querySelector('.ad-form__drop-zone');
-  var housingPhotosPreviews = adForm.querySelector('.ad-form__photo');
+  var housingPhotosPreview = adForm.querySelector('.ad-form__photo');
+  var dragObj = null;
 
   var map = document.querySelector('.map');
   var mapFilters = map.querySelector('.map__filters');
@@ -96,6 +97,18 @@
     document.addEventListener('keydown', removeSuccesWindow);
   };
 
+  var onImageDrop = function (evt) {
+    evt.preventDefault();
+    evt.target.parentNode.insertBefore(dragObj, evt.target);
+  };
+
+  var addDragListeners = function (obj) {
+    obj.addEventListener('dragstart', function () {
+      dragObj = obj;
+    });
+    obj.addEventListener('drop', onImageDrop);
+  };
+
   var isImage = function (file) {
     return MIME_TYPES.indexOf(file.type) !== -1;
   };
@@ -129,18 +142,18 @@
   };
 
   var renderHousingPhoto = function (photoSrc) {
-    var photoDiv = housingPhotosPreviews.cloneNode();
+    var photoDiv = housingPhotosPreview.cloneNode();
     var image = document.createElement('img');
     image.src = photoSrc;
     photoDiv.draggable = true;
     photoDiv.appendChild(image);
-    housingPhotosPreviews.parentNode.insertBefore(photoDiv, housingPhotosPreviews);
+    addDragListeners(photoDiv);
+    housingPhotosPreview.parentNode.insertBefore(photoDiv, housingPhotosPreview);
   };
 
 
   var upload = function (file, cb) {
     var reader = new FileReader();
-
     reader.addEventListener('load', function () {
       cb(reader.result);
     });
@@ -236,6 +249,14 @@
     uploadAvatar(evt.dataTransfer.files);
   });
 
+  avatarDropzone.addEventListener('dragenter', function (evt) {
+    evt.target.classList.add('ad-form-header__drop-zone--hover');
+  });
+
+  avatarDropzone.addEventListener('dragleave', function (evt) {
+    evt.target.classList.remove('ad-form-header__drop-zone--hover');
+  });
+
   // Загрузка фотографий жилья через input
   housingPhotosUploader.addEventListener('change', function () {
     uploadHousingPhotos(housingPhotosUploader.files);
@@ -246,6 +267,16 @@
     evt.preventDefault();
     uploadHousingPhotos(evt.dataTransfer.files);
   });
+
+  housingPhotosDropzone.addEventListener('dragenter', function (evt) {
+    evt.target.classList.add('ad-form__drop-zone--hover');
+  });
+
+  housingPhotosDropzone.addEventListener('dragleave', function (evt) {
+    evt.target.classList.remove('ad-form__drop-zone--hover');
+  });
+
+  housingPhotosPreview.addEventListener('drop', onImageDrop);
 
   // Изменение минимальной цены и плейсхолдера поля ввода цены при изменении типа жилья
   houseTypeSelect.addEventListener('change', function (evt) {
