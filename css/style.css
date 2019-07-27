@@ -1263,3 +1263,7 @@ fieldset {
 .error__button:disabled {
   opacity: 0.3;
 }
+
+.field-error {
+ box-shadow: 0 0 2px 3px red;
+}

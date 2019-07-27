@@ -12,6 +12,7 @@
 
   var main = document.querySelector('main');
   var adForm = document.querySelector('.ad-form');
+  var title = adForm.querySelector('#title');
   var address = adForm.querySelector('#address');
   var houseTypeSelect = adForm.querySelector('#type');
   var roomsNumber = adForm.querySelector('#room_number');
@@ -19,6 +20,7 @@
   var pricePerNight = adForm.querySelector('#price');
   var timein = adForm.querySelector('#timein');
   var timeout = adForm.querySelector('#timeout');
+  var fieldsToValidate = [title, pricePerNight, capacity];
 
   var avatar = null;
   var avatarUploader = adForm.querySelector('#avatar');
@@ -39,6 +41,40 @@
                         .content
                         .querySelector('.success');
 
+  var FieldsValidation = {
+    title: function () {
+      return title.value.length > 30 && title.value.length < 100;
+    },
+
+    price: function () {
+      return pricePerNight.value >= HousingMinPrices[houseTypeSelect.value];
+    },
+
+    capacity: function () {
+      var rooms = roomsNumber.value === '100' ? 0 : Number(roomsNumber.value);
+      return rooms >= capacity.value;
+    },
+  };
+
+  var validateFields = function () {
+    return fieldsToValidate.filter(function (it) {
+      return !FieldsValidation[it.name]();
+    });
+  };
+
+  var setValidationError = function (elem) {
+    var action = elem.tagName === 'INPUT' ? 'input' : 'change';
+    elem.addEventListener(action, removeValidationError);
+    elem.classList.add('field-error');
+  };
+
+  var removeValidationError = function (evt) {
+    var action = evt.target.tagName === 'INPUT' ? 'input' : 'change';
+    if (FieldsValidation[evt.target.name]()) {
+      evt.target.classList.remove('field-error');
+      event.target.removeEventListener(action, removeValidationError);
+    }
+  };
   /**
   * Функция изменяет значение поля input#price в зависимости от выбранного
   * option в houseTypeSelect
@@ -73,9 +109,6 @@
     Array.prototype.forEach.call(capacity.children, function (it) {
       it.disabled = (Number(it.value) === 0 && rooms !== 0) || Number(it.value) > rooms;
     });
-    if (value < capacity.value) {
-      capacity.setCustomValidity('Выбранное количество гостей не соответствует выбранному количеству комнат');
-    }
   };
 
   var showSuccessWindow = function () {
@@ -298,23 +331,22 @@
     changeCapacityOptions(evt.target.value);
   });
 
-  // Задание сообщения об ошибке при отправке формы,
-  // если выбранное количество мест не соответсвует выбранному количеству комнат
-  capacity.addEventListener('change', function () {
-    capacity.setCustomValidity('');
-  });
-
   // Отправка формы
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    var data = new FormData(adForm);
-    setAvatarUploaderFile(data);
-    setHousingPhotosUploaderFiles(data);
-    window.backend.save(
-        data,
-        onFormSaveSuccess,
-        window.error.show
-    );
+    var result = validateFields();
+    if (!result.length) {
+      var data = new FormData(adForm);
+      setAvatarUploaderFile(data);
+      setHousingPhotosUploaderFiles(data);
+      window.backend.save(
+          data,
+          onFormSaveSuccess,
+          window.error.show
+      );
+    } else {
+      result.forEach(setValidationError);
+    }
   });
 
   adForm.addEventListener('reset', initial);
