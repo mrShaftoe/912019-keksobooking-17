@@ -29,26 +29,20 @@
     this._sizes = sizes;
   };
   PinCoordinates.prototype.setXY = function (x, y) {
-    switch (true) {
-      case x < this._limits.left - this._sizes.width / 2:
-        this.x = this._limits.left - this._sizes.width / 2;
-        break;
-      case x > this._limits.right - this._sizes.width / 2:
-        this.x = this._limits.right - this._sizes.width / 2;
-        break;
-      default:
-        this.x = x;
+    this.x = x;
+    this.y = y;
+    if (x < this._limits.left - this._sizes.width / 2) {
+      this.x = this._limits.left - this._sizes.width / 2;
+    }
+    if (x > this._limits.right - this._sizes.width / 2) {
+      this.x = this._limits.right - this._sizes.width / 2;
     }
 
-    switch (true) {
-      case y < this._limits.top - this._sizes.height:
-        this.y = this._limits.top - this._sizes.height;
-        break;
-      case y > this._limits.bottom - this._sizes.height:
-        this.y = this._limits.bottom - this._sizes.height;
-        break;
-      default:
-        this.y = y;
+    if (y < this._limits.top - this._sizes.height) {
+      this.y = this._limits.top - this._sizes.height;
+    }
+    if (y > this._limits.bottom - this._sizes.height) {
+      this.y = this._limits.bottom - this._sizes.height;
     }
   };
 

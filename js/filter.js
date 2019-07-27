@@ -89,7 +89,7 @@
     return newData;
   };
 
-  var getAllUniquesCount = function (data) {
+  var setAllUniquesCount = function (data) {
     return data.reduce(function (acc, elem) {
       var idx = initialData.indexOf(elem);
       acc[idx] = (acc[idx] || 0) + 1;
@@ -111,17 +111,14 @@
 
   var onFilterChange = function (evt) {
     updateFiltersResults(evt.target);
-    var newData = getFilteredData(getAllUniquesCount(concatAllFitersResults()));
+    var newData = getFilteredData(setAllUniquesCount(concatAllFitersResults()));
     window.pins.append(newData);
   };
 
   var mapFilterInit = function () {
     filters.forEach(function (it) {
-      if (isSelect(it)) {
-        FiltersResults[it.name] = initialData;
-      } else {
-        FiltersResults[it.value] = initialData;
-      }
+      var key = isSelect(it) ? it.name : it.value;
+      FiltersResults[key] = initialData;
     });
 
     mapFilters.addEventListener('change', function (evt) {
