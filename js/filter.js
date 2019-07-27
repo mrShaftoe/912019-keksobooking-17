@@ -112,6 +112,7 @@
   var onFilterChange = function (evt) {
     updateFiltersResults(evt.target);
     var newData = getFilteredData(setAllUniquesCount(concatAllFitersResults()));
+    window.cards.close();
     window.pins.append(newData);
   };
 

@@ -259,6 +259,7 @@
   };
 
   initial();
+
   // Запрет действия по умолчанию при перетаскивание файла извне
   document.addEventListener('dragover', function (evt) {
     evt.preventDefault();
@@ -282,12 +283,12 @@
     uploadAvatar(evt.dataTransfer.files);
   });
 
-  avatarDropzone.addEventListener('dragenter', function (evt) {
-    evt.target.classList.add('ad-form-header__drop-zone--hover');
+  avatarDropzone.addEventListener('dragenter', function () {
+    avatarDropzone.classList.add('ad-form-header__drop-zone--hover');
   });
 
-  avatarDropzone.addEventListener('dragleave', function (evt) {
-    evt.target.classList.remove('ad-form-header__drop-zone--hover');
+  avatarDropzone.addEventListener('dragleave', function () {
+    avatarDropzone.classList.remove('ad-form-header__drop-zone--hover');
   });
 
   // Загрузка фотографий жилья через input
@@ -301,12 +302,12 @@
     uploadHousingPhotos(evt.dataTransfer.files);
   });
 
-  housingPhotosDropzone.addEventListener('dragenter', function (evt) {
-    evt.target.classList.add('ad-form__drop-zone--hover');
+  housingPhotosDropzone.addEventListener('dragenter', function () {
+    housingPhotosDropzone.classList.add('ad-form__drop-zone--hover');
   });
 
-  housingPhotosDropzone.addEventListener('dragleave', function (evt) {
-    evt.target.classList.remove('ad-form__drop-zone--hover');
+  housingPhotosDropzone.addEventListener('dragleave', function () {
+    housingPhotosDropzone.classList.remove('ad-form__drop-zone--hover');
   });
 
   housingPhotosPreview.addEventListener('drop', onImageDrop);
