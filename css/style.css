@@ -568,7 +568,8 @@ fieldset {
   cursor: pointer;
 }
 
-.ad-form-header__drop-zone:hover {
+.ad-form-header__drop-zone:hover,
+.ad-form-header__drop-zone--hover {
   color: #ff5635;
 }
 
@@ -794,7 +795,8 @@ fieldset {
   cursor: pointer;
 }
 
-.ad-form__drop-zone:hover {
+.ad-form__drop-zone:hover,
+.ad-form__drop-zone--hover {
   color: #ff5635;
 }
 
@@ -806,6 +808,7 @@ fieldset {
 }
 
 .ad-form__photo {
+  display: flex;
   margin-right: 10px;
   margin-bottom: 10px;
 
@@ -814,6 +817,14 @@ fieldset {
 
   background-color: #e4e4de;
   border-radius: 5px;
+}
+
+.ad-form__photo img {
+  max-height: 100%;
+  max-width: 100%;
+  vertical-align: middle;
+  margin: auto;
+  pointer-events: none;
 }
 
 .ad-form__element--submit {
@@ -1251,4 +1262,8 @@ fieldset {
 
 .error__button:disabled {
   opacity: 0.3;
+}
+
+.field-error {
+ box-shadow: 0 0 2px 3px red;
 }

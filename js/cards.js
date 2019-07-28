@@ -92,7 +92,8 @@
 
   window.cards = {
     append: appendCardToMap,
-    show: showCard
+    show: showCard,
+    close: closeCard
   };
 
 })();
