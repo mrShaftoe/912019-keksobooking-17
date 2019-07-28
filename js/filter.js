@@ -129,7 +129,7 @@
     });
   };
 
-  window.onDataLoad = function (response) {
+  var onDataLoad = function (response) {
     initialData = response.filter(function (it) {
       return it.offer.type;
     });
@@ -137,5 +137,9 @@
     mapFilterInit(initialData);
     window.pins.append(initialData);
     window.cards.append(initialData);
+  };
+
+  window.filter = {
+    onLoad: onDataLoad
   };
 })();

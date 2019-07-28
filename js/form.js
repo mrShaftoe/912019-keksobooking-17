@@ -335,20 +335,21 @@
   // Отправка формы
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    var result = validateFields();
-    if (!result.length) {
-      var data = new FormData(adForm);
-      setAvatarUploaderFile(data);
-      setHousingPhotosUploaderFiles(data);
-      window.backend.save(
-          data,
-          onFormSaveSuccess,
-          window.error.show
-      );
-    } else {
-      result.forEach(setValidationError);
-    }
+    var data = new FormData(adForm);
+    setAvatarUploaderFile(data);
+    setHousingPhotosUploaderFiles(data);
+    window.backend.save(
+        data,
+        onFormSaveSuccess,
+        window.error.show
+    );
+
   });
+
+  adForm.addEventListener('invalid', function () {
+    var result = validateFields();
+    result.forEach(setValidationError);
+  }, true);
 
   adForm.addEventListener('reset', initial);
 
