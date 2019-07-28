@@ -66,7 +66,7 @@
     }
 
     window.backend.load(
-        window.onDataLoad,
+        window.filter.onLoad,
         window.error.show
     );
   };
