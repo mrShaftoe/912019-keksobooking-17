@@ -123,13 +123,13 @@
     });
 
     mapFilters.addEventListener('change', function (evt) {
-      window.debounce(function () {
+      window.utils.debounce(function () {
         onFilterChange(evt);
       });
     });
   };
 
-  var onDataLoad = function (response) {
+  window.onDataLoad = function (response) {
     initialData = response.filter(function (it) {
       return it.offer.type;
     });
@@ -137,9 +137,5 @@
     mapFilterInit(initialData);
     window.pins.append(initialData);
     window.cards.append(initialData);
-  };
-
-  window.filter = {
-    onLoad: onDataLoad
   };
 })();
