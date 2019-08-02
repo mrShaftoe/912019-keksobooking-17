@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEY_CODE = 27;
-
   var errorTemplate = document.querySelector('#error')
       .content
       .querySelector('.error');
@@ -13,7 +11,7 @@
     main.appendChild(errorWindow);
 
     var onEscPress = function (evt) {
-      if (evt.keyCode === ESC_KEY_CODE) {
+      if (window.utils.isEscPressed(evt)) {
         evt.preventDefault();
         removeErrorWindow();
       }
@@ -28,7 +26,5 @@
     document.addEventListener('keydown', onEscPress);
   };
 
-  window.error = {
-    show: showErrorWindow
-  };
+  window.showErrorWindow = showErrorWindow;
 })();

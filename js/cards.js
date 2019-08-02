@@ -1,15 +1,13 @@
 'use strict';
 
 (function () {
-  var ESC_KEY_CODE = 27;
-
   var cardTemplate = document.querySelector('#card')
       .content
       .querySelector('.map__card');
   var photoTemplate = cardTemplate.querySelector('.popup__photo');
 
   var card = cardTemplate.cloneNode(true);
-  var cardCloseButtton = card.querySelector('.popup__close');
+  var cardCloseButton = card.querySelector('.popup__close');
   var map = document.querySelector('.map');
 
   var HousingTypes = {
@@ -72,7 +70,7 @@
   };
 
   var onEscPress = function (evt) {
-    if (evt.keyCode === ESC_KEY_CODE) {
+    if (window.utils.isEscPressed(evt)) {
       closeCard();
     }
   };
@@ -87,7 +85,7 @@
     updateCard(data);
     card.classList.remove('hidden');
     document.addEventListener('keydown', onEscPress);
-    cardCloseButtton.addEventListener('click', onCloseButtonClick);
+    cardCloseButton.addEventListener('click', onCloseButtonClick);
   };
 
   window.cards = {

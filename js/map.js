@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var ENTER_KEY_CODE = 13;
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
@@ -13,18 +12,8 @@
     bottom: 630
   };
 
-  var Coordinates = function (x, y) {
-    this.x = x;
-    this.y = y;
-  };
-
-  Coordinates.prototype.setXY = function (x, y) {
-    this.x = x;
-    this.y = y;
-  };
-
   var PinCoordinates = function (x, y, limits, sizes) {
-    Coordinates.call(this, x, y);
+    window.utils.Coordinates.call(this, x, y);
     this._limits = limits;
     this._sizes = sizes;
   };
@@ -66,13 +55,13 @@
     }
 
     window.backend.load(
-        window.filter.onLoad,
+        window.onDataLoad,
         window.error.show
     );
   };
 
   var onEnterPress = function (evt) {
-    if (evt.keyCode === ENTER_KEY_CODE) {
+    if (window.utils.isEnterPressed(evt)) {
       evt.preventDefault();
       activatePage();
     }
@@ -83,7 +72,7 @@
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     activatePage();
-    var startCoords = new Coordinates(evt.clientX, evt.clientY);
+    var startCoords = new window.utils.Coordinates(evt.clientX, evt.clientY);
     var mainPinCoords = new PinCoordinates(mainPin.offsetLeft, mainPin.offsetTop, MapLimits, window.pins.MainPinSizes);
     var onMainPinMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
@@ -91,19 +80,19 @@
         window.activated = true;
         activatePage();
       }
-      var shift = new Coordinates(startCoords.x - moveEvt.clientX, startCoords.y - moveEvt.clientY);
+      var shift = new window.utils.Coordinates(startCoords.x - moveEvt.clientX, startCoords.y - moveEvt.clientY);
       startCoords.setXY(moveEvt.clientX, moveEvt.clientY);
       mainPinCoords.setXY(mainPin.offsetLeft - shift.x, mainPin.offsetTop - shift.y);
       mainPin.style.left = mainPinCoords.x + 'px';
       mainPin.style.top = mainPinCoords.y + 'px';
 
-      window.form.setAddress(mainPin.offsetLeft + window.pins.MainPinSizes.width / 2, mainPin.offsetTop + window.pins.MainPinSizes.height);
+      window.setAddress(mainPin.offsetLeft + Math.floor(window.pins.MainPinSizes.width / 2), mainPin.offsetTop + window.pins.MainPinSizes.height);
     };
 
     var onMainPinMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      window.form.setAddress(mainPin.offsetLeft + window.pins.MainPinSizes.width / 2, mainPin.offsetTop + window.pins.MainPinSizes.height);
+      window.setAddress(mainPin.offsetLeft + Math.floor(window.pins.MainPinSizes.width / 2), mainPin.offsetTop + window.pins.MainPinSizes.height);
       document.removeEventListener('mousemove', onMainPinMouseMove);
       document.removeEventListener('mouseup', onMainPinMouseUp);
     };

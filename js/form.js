@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEY_CODE = 27;
   var MIME_TYPES = ['image/gif', 'image/jpeg', 'image/png'];
   var HousingMinPrices = {
     'bungalo': 0,
@@ -41,9 +40,14 @@
                         .content
                         .querySelector('.success');
 
+  var setCapacityValidity = function (rooms) {
+    var message = rooms < capacity.value ? 'Количество гостей не соответствует количеству комнат' : '';
+    capacity.setCustomValidity(message);
+  };
+
   var FieldsValidation = {
     title: function () {
-      return title.value.length > 30 && title.value.length < 100;
+      return title.value.length >= 30 && title.value.length <= 100;
     },
 
     price: function () {
@@ -52,6 +56,7 @@
 
     capacity: function () {
       var rooms = roomsNumber.value === '100' ? 0 : Number(roomsNumber.value);
+      setCapacityValidity(rooms);
       return rooms >= capacity.value;
     },
   };
@@ -64,16 +69,20 @@
 
   var setValidationError = function (elem) {
     var action = elem.tagName === 'INPUT' ? 'input' : 'change';
-    elem.addEventListener(action, removeValidationError);
+    elem.addEventListener(action, onInvalidChange);
     elem.classList.add('field-error');
   };
 
-  var removeValidationError = function (evt) {
-    var action = evt.target.tagName === 'INPUT' ? 'input' : 'change';
-    if (FieldsValidation[evt.target.name]()) {
-      evt.target.classList.remove('field-error');
-      event.target.removeEventListener(action, removeValidationError);
+  var removeValidationError = function (elem) {
+    var action = elem.tagName === 'INPUT' ? 'input' : 'change';
+    if (FieldsValidation[elem.name]()) {
+      elem.classList.remove('field-error');
+      elem.removeEventListener(action, onInvalidChange);
     }
+  };
+
+  var onInvalidChange = function (evt) {
+    removeValidationError(evt.target);
   };
   /**
   * Функция изменяет значение поля input#price в зависимости от выбранного
@@ -104,8 +113,8 @@
   };
 
   var changeCapacityOptions = function (value) {
-    capacity.setCustomValidity('');
     var rooms = value === '100' ? 0 : Number(value);
+    setCapacityValidity(rooms);
     Array.prototype.forEach.call(capacity.children, function (it) {
       it.disabled = (Number(it.value) === 0 && rooms !== 0) || Number(it.value) > rooms;
     });
@@ -116,7 +125,7 @@
     main.appendChild(successWindow);
 
     var removeSuccesWindow = function (evt) {
-      if (evt.keyCode === ESC_KEY_CODE) {
+      if (window.utils.isEscPressed(evt)) {
         successWindow.remove();
         document.removeEventListener('keydown', removeSuccesWindow);
       }
@@ -203,11 +212,12 @@
   };
 
   var uploadHousingPhotos = function (data) {
-    var dataArr = Array.from(data).filter(function (it) {
-      return isImage(it) && isNotUploaded(it);
-    });
-    dataArr.forEach(function (it) {
-      upload(it, renderHousingPhoto);
+    Array.from(data).filter(function (it) {
+      var result = isImage(it) && isNotUploaded(it);
+      if (result) {
+        upload(it, renderHousingPhoto);
+      }
+      return result;
     });
   };
 
@@ -233,6 +243,7 @@
   */
 
   var initial = function () {
+
     adForm.reset();
     window.activated = false;
     window.pins.append([]);
@@ -240,8 +251,8 @@
     adForm.classList.add('ad-form--disabled');
     resetAvatar();
     resetHousingPhotos();
-    mainPin.style.left = window.MainPinCoords.x;
-    mainPin.style.top = window.MainPinCoords.y;
+    mainPin.style.left = window.pins.MainPinCoords.x + 'px';
+    mainPin.style.top = window.pins.MainPinCoords.y + 'px';
     for (var i = 0; i < adForm.children.length; i++) {
       adForm.children[i].disabled = true;
     }
@@ -250,7 +261,7 @@
       mapFilters.children[i].disabled = true;
     }
     changeCapacityOptions(roomsNumber.value);
-    setAddress(mainPin.offsetLeft + window.pins.MainPinSizes.width / 2, mainPin.offsetTop + window.pins.MainPinSizes.width / 2);
+    setAddress(mainPin.offsetLeft + Math.floor(window.pins.MainPinSizes.width / 2), mainPin.offsetTop + Math.floor(window.pins.MainPinSizes.width / 2));
   };
 
   var onFormSaveSuccess = function () {
@@ -330,6 +341,7 @@
   // Изменение доступных опций поля "Количество мест" при изменении количества комнат
   roomsNumber.addEventListener('change', function (evt) {
     changeCapacityOptions(evt.target.value);
+    removeValidationError(capacity);
   });
 
   // Отправка формы
@@ -351,9 +363,9 @@
     result.forEach(setValidationError);
   }, true);
 
-  adForm.addEventListener('reset', initial);
+  adForm.addEventListener('reset', function () {
+    initial();
+  });
 
-  window.form = {
-    setAddress: setAddress,
-  };
+  window.setAddress = setAddress;
 })();
