@@ -13,7 +13,7 @@
   var mapPins = document.querySelector('.map__pins');
   var pinsQuantity;
   var mainPin = mapPins.querySelector('.map__pin--main');
-  window.MainPinCoords = new window.utils.Coordinates(mainPin.offsetLeft, mainPin.offsetTop);
+  var MainPinCoords = new window.utils.Coordinates(mainPin.offsetLeft, mainPin.offsetTop);
   var onPinClick = function (data) {
     window.cards.show(data);
   };
@@ -66,6 +66,7 @@
   window.pins = {
     append: appendPinsToMap,
     MainPinSizes: MainPinSizes,
+    MainPinCoords: MainPinCoords,
     setShownQuantity: setShownPinsQuantity
   };
 

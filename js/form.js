@@ -40,6 +40,11 @@
                         .content
                         .querySelector('.success');
 
+  var setCapacityValidity = function (rooms) {
+    var message = rooms < capacity.value ? 'Количество гостей не соответствует количеству комнат' : '';
+    capacity.setCustomValidity(message);
+  };
+
   var FieldsValidation = {
     title: function () {
       return title.value.length >= 30 && title.value.length <= 100;
@@ -51,6 +56,7 @@
 
     capacity: function () {
       var rooms = roomsNumber.value === '100' ? 0 : Number(roomsNumber.value);
+      setCapacityValidity(rooms);
       return rooms >= capacity.value;
     },
   };
@@ -63,19 +69,20 @@
 
   var setValidationError = function (elem) {
     var action = elem.tagName === 'INPUT' ? 'input' : 'change';
-    elem.addEventListener(action, removeValidationError);
+    elem.addEventListener(action, onInvalidChange);
     elem.classList.add('field-error');
   };
 
-  var removeValidationError = function (evt) {
-    var action = evt.target.tagName === 'INPUT' ? 'input' : 'change';
-    if (FieldsValidation[evt.target.name]()) {
-      evt.target.classList.remove('field-error');
-      event.target.removeEventListener(action, removeValidationError);
-      if (evt.target.name === 'capacity') {
-        evt.target.setCustomValidity('');
-      }
+  var removeValidationError = function (elem) {
+    var action = elem.tagName === 'INPUT' ? 'input' : 'change';
+    if (FieldsValidation[elem.name]()) {
+      elem.classList.remove('field-error');
+      elem.removeEventListener(action, onInvalidChange);
     }
+  };
+
+  var onInvalidChange = function (evt) {
+    removeValidationError(evt.target);
   };
   /**
   * Функция изменяет значение поля input#price в зависимости от выбранного
@@ -107,8 +114,7 @@
 
   var changeCapacityOptions = function (value) {
     var rooms = value === '100' ? 0 : Number(value);
-    var message = rooms >= capacity.value ? '' : 'Количество комнат не соответствует количеству гостей';
-    capacity.setCustomValidity(message);
+    setCapacityValidity(rooms);
     Array.prototype.forEach.call(capacity.children, function (it) {
       it.disabled = (Number(it.value) === 0 && rooms !== 0) || Number(it.value) > rooms;
     });
@@ -245,8 +251,8 @@
     adForm.classList.add('ad-form--disabled');
     resetAvatar();
     resetHousingPhotos();
-    mainPin.style.left = window.MainPinCoords.x + 'px';
-    mainPin.style.top = window.MainPinCoords.y + 'px';
+    mainPin.style.left = window.pins.MainPinCoords.x + 'px';
+    mainPin.style.top = window.pins.MainPinCoords.y + 'px';
     for (var i = 0; i < adForm.children.length; i++) {
       adForm.children[i].disabled = true;
     }
@@ -335,15 +341,12 @@
   // Изменение доступных опций поля "Количество мест" при изменении количества комнат
   roomsNumber.addEventListener('change', function (evt) {
     changeCapacityOptions(evt.target.value);
+    removeValidationError(capacity);
   });
 
   // Отправка формы
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    if (!FieldsValidation.capacity()) {
-      setValidationError(capacity);
-      return;
-    }
     var data = new FormData(adForm);
     setAvatarUploaderFile(data);
     setHousingPhotosUploaderFiles(data);
