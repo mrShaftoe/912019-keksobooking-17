@@ -212,12 +212,11 @@
   };
 
   var uploadHousingPhotos = function (data) {
-    Array.from(data).filter(function (it) {
+    Array.from(data).forEach(function (it) {
       var result = isImage(it) && isNotUploaded(it);
       if (result) {
         upload(it, renderHousingPhoto);
       }
-      return result;
     });
   };
 
